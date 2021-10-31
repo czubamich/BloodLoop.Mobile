@@ -25,7 +25,7 @@ jobs:
           expo-token: ${{ secrets.EXPO_TOKEN_SECRET }}
           
       - name: Install dependencies
-        run: yarn install
+        run: npm install
         
       - name: Publish to Expo & create a QR code
         uses: expo/expo-preview-action@v1
