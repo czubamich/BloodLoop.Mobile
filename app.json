@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "BloodLoop",
+    "icon": "./src/res/ic_launcher.png",
+    "primaryColor": "#F44336",
+    "version": "0.0.1",
+    "slug": "bloodloop-app",
+    "ios": {
+      "bundleIdentifier": "com.michczu.bloodloop",
+      "buildNumber": "0.0.1"
+    },
+    "android": {
+      "package": "com.michczu.bloodloop",
+      "versionCode": 1
+    },
+    "description": ""
+  }
+}
