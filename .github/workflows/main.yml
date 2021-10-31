@@ -33,16 +33,12 @@ jobs:
           channel: pr-${{ github.event.number }}
         id: preview
 
-      - name: Expo CLI
-        uses: expo/expo-github-action@3.0.0
-
       - name: Comment deployment link
         uses: unsplash/comment-on-pr@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           msg: >
-            You can [preview the following version here](${{ steps.preview.outputs.EXPO_QR_CODE_URL }}).<br><br>
-            <a href="${{ steps.publish.outputs.EXPO_QR_CODE_URL }}"><img src="${{ steps.preview.outputs.EXPO_QR_CODE_URL }}" height="512px" width="512px"></a>
-            <br><br>
+            You can [preview the PR here](${{ steps.preview.outputs.EXPO_MANIFEST_URL }}).<br><br>
+            <br>
             ${{ steps.publish.outputs.EXPO_NEW_BUILD_IS_REQUIRED_MESSAGE }}
