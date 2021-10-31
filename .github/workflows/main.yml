@@ -39,6 +39,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           msg: >
-            You can [preview the PR here](${{ steps.preview.outputs.EXPO_MANIFEST_URL }}).<br><br>
+            You can [preview the PR here](https://expo.dev/@michczu152/bloodloop-app?release-channel=pr-${{ github.event.number }}).<br><br>
             <br>
             ${{ steps.publish.outputs.EXPO_NEW_BUILD_IS_REQUIRED_MESSAGE }}
