@@ -1,0 +1,48 @@
+name: Expo CI/CD
+
+on:
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Set up Expo
+        uses: expo/expo-github-action@v5
+        with:
+          expo-cache: true
+          expo-version: 4.x
+          expo-token: ${{ secrets.EXPO_TOKEN_SECRET }}
+          
+      - name: Install dependencies
+        run: yarn install
+        
+      - name: Publish to Expo & create a QR code
+        uses: expo/expo-preview-action@v1
+        with:
+          channel: pr-${{ github.event.number }}
+        id: preview
+
+      - name: Expo CLI
+        uses: expo/expo-github-action@3.0.0
+
+      - name: Comment deployment link
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: >
+            You can [preview the following version here](${{ steps.preview.outputs.EXPO_QR_CODE_URL }}).<br><br>
+            <a href="${{ steps.publish.outputs.EXPO_QR_CODE_URL }}"><img src="${{ steps.preview.outputs.EXPO_QR_CODE_URL }}" height="512px" width="512px"></a>
+            <br><br>
+            ${{ steps.publish.outputs.EXPO_NEW_BUILD_IS_REQUIRED_MESSAGE }}
