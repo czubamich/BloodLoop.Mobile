@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "BloodLoop",
+    "owner": "michczu152",
     "icon": "./src/res/ic_launcher.png",
     "primaryColor": "#F44336",
     "version": "0.0.1",

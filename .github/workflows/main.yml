@@ -1,0 +1,44 @@
+name: Expo CI/CD
+
+on:
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Set up Expo
+        uses: expo/expo-github-action@v5
+        with:
+          expo-cache: true
+          expo-version: 4.x
+          expo-token: ${{ secrets.EXPO_TOKEN_SECRET }}
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Publish to Expo & create a QR code
+        uses: expo/expo-preview-action@v1
+        with:
+          channel: pr-${{ github.event.number }}
+        id: preview
+
+      - name: Comment deployment link
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: >
+            You can [preview the PR here](https://expo.dev/@michczu152/bloodloop-app?release-channel=pr-${{ github.event.number }}).<br><br>
+            <br>
+            ${{ steps.publish.outputs.EXPO_NEW_BUILD_IS_REQUIRED_MESSAGE }}
