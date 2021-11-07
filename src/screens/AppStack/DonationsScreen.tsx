@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, Center, ScrollView, SectionList, Divider } from "native-base";
-import { DonationCard } from '../components/donations/DonationCard';
+import { DonationCard } from '../../components/donations/DonationCard';
 
 export class DonationsScreen extends React.Component {
   data = [

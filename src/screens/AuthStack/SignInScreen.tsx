@@ -1,16 +1,32 @@
 import React, { useState } from 'react';
 import { Box, Text, Center, Divider, Stack, FormControl, Input, Button, Checkbox, Icon } from "native-base";
-import { Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useAuth } from '../../components/AuthProvider';
 
-import { AuthContext } from '../utils/Context';
+interface ISignUpData
+{
+    email: string,
+    password: string
+}
 
-export const LoginScreen = () => {
+export const SignInScreen = () => {
     const nav = useNavigation<StackNavigationProp<any, any>>();
-    const [status, setStatus] = useState(false)
-    const { signIn } = React.useContext(AuthContext);
+    const [formData, setFormData] = React.useState<ISignUpData | undefined>(undefined)
+    const [status, setStatus] = React.useState(false)
+    const [errors, setErrors] = React.useState<string>(undefined)
+    const authContext = useAuth()
+    const onSignIn = async () => {
+        setStatus(true)
+        let result = await authContext.signIn(formData.email, formData.password)
+        if(result.success == false)
+            setErrors(result.message)
+        else
+            setErrors(undefined)
+
+        setStatus(false)
+    }
 
     return (
     <Center flex={1} bg="red.500">
@@ -24,26 +40,26 @@ export const LoginScreen = () => {
                 base: "100%",
                 md: "420",
             }}>
-            <FormControl marginTop={2} isInvalid={status}>
+            <FormControl marginTop={2} isInvalid={errors != undefined}>
                 <Stack>
                     <Input 
-                        onChangeText={() => setStatus(false)} 
+                        onChangeText={(value) => setFormData({...formData, email: value})}
                         variant='filled'
-                        placeholder="Email" 
+                        placeholder="Email"
                         InputLeftElement={<Icon as={MaterialCommunityIcons} ml="2" name="account" color="muted.400"/>}/>
                     <Input mt={6} mb={4}
-                        onChangeText={() => setStatus(false)} 
+                        onChangeText={(value) => setFormData({...formData, password: value})} 
                         variant='filled'
                         placeholder="Password" type="password" 
                         InputLeftElement={<Icon as={MaterialCommunityIcons} ml="2" name="lock" color="muted.400"/>}/>
                     <FormControl.ErrorMessage mt={2}>
-                        Invalid username and/or password.
+                        {errors}
                     </FormControl.ErrorMessage>
                 </Stack>
             </FormControl>
             <Divider mb={4} mt={2}/>
-            <Text alignSelf="flex-end" mb={6} onPress={() => setStatus(true)} fontSize='sm' color='muted.400'>Forgot password?</Text>
-            <Button isLoading={status} isLoadingText="Signing in" variant='solid' colorScheme="red" onPress={() => signIn()}>Sign in</Button>
+            {/* <Text alignSelf="flex-end" mb={6} fontSize='sm' color='muted.400'>Forgot password?</Text> */}
+            <Button isLoading={status} isLoadingText="Signing in" variant='solid' colorScheme="red" onPress={onSignIn}>Sign in</Button>
             <Box flex={1}/>
             <Center>
                 <Text color="muted.400" my={4} onPress={() => nav.navigate('SignUp')}>Don't have an account? <Text bold>Sing up!</Text></Text>

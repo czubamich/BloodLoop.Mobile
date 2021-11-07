@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Center, ScrollView, SectionList, Divider, Spinner } from "native-base";
 
-export class LoadingScreen extends React.Component {
+export class SplashScreen extends React.Component {
     render() {
         return (
         <Center flex={1}>
