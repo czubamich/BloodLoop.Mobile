@@ -7,6 +7,7 @@ import {
   } from 'native-base';
 import { NavButton } from './NavButton'
 import { NavigationContainerRef } from "@react-navigation/core";
+import { Routes } from "../../screens/Routes";
 
 export function NavBar({ state, descriptors, navigation }) {
     return (
@@ -25,11 +26,11 @@ export function NavBar({ state, descriptors, navigation }) {
         const isFocused = state.index === index;
 
         let icon = ""
-        if (route.name === "Calendar")
+        if (route.name === Routes.Calendar)
           icon = "calendar"
-        else if (route.name === "Summary")
+        else if (route.name === Routes.Summary)
           icon = "home-variant"
-        else if (route.name === "History")
+        else if (route.name === Routes.History)
           icon = "clipboard-text"
 
         const onPress = () => {

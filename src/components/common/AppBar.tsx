@@ -1,7 +1,7 @@
 import React from "react";
 import { HStack, IconButton, Icon, Text, Menu, Button } from "native-base";
 import { MaterialIcons } from '@expo/vector-icons';
-import { AuthContext } from "../../utils/Context";
+import { AuthContext } from "../AuthProvider";
 import { Pressable } from "react-native";
 
 interface AppBarData

@@ -1,4 +1,4 @@
-export const options = {
-    baseUrl: 'http://localhost:3000',
-    timeout: 10000,
+export const config = {
+    apiUrl: 'https://bloodloop-api-dev.azurewebsites.net',
+    timeout: 2000,
 }

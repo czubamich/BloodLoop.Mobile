@@ -4,12 +4,12 @@ import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { AuthContext } from '../utils/Context';
+import { useAuth } from '../../components/AuthProvider';
 
-export const RegisterScreen = () => {
+export const SignUpScreen = () => {
     const nav = useNavigation<StackNavigationProp<any, any>>();
     const [status, setStatus] = useState(false)
-    const { signUp } = React.useContext(AuthContext);
+    const authContext = useAuth()
 
     return (
     <Center flex={1} bg="red.500">
@@ -77,7 +77,7 @@ export const RegisterScreen = () => {
                 </Stack>
             </FormControl>
             <Divider mb={4} mt={2}/>
-            <Button isLoading={status} isLoadingText="Signing in" variant='solid' colorScheme="red" onPress={() => signUp()}>Sign up</Button>
+            <Button isLoading={status} isLoadingText="Signing in" variant='solid' colorScheme="red" onPress={() => null}>Sign up</Button>
             <Box flex={1}/>
             <Text alignSelf="center" color="muted.400" my={4} onPress={() => nav.navigate('SignIn')}>Already have an account? <Text bold>Sing in!</Text></Text>
             </ScrollView>
