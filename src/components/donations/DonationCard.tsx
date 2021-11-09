@@ -1,12 +1,6 @@
 import React from "react";
 import { Box, VStack, HStack, Text, Pressable } from "native-base"
-
-interface DonationData
-{
-    name: String;
-    date: Date;
-    amount: String;
-}
+import { DonationData } from "../../models/DonationData";
 
 export const DonationCard = (props: DonationData) => {
 return (
