@@ -69,7 +69,7 @@ export const AuthProvider: React.FC = ({children}) => {
   const signOut = async () => {
     setAuthData(undefined);
   };
-
+  
   return (
     //This component will be used to encapsulate the whole App,
     //so all components will have access to the Context

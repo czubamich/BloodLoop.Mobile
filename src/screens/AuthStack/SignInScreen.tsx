@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Text, Center, Divider, Stack, FormControl, Input, Button, Checkbox, Icon } from "native-base";
+import { Box, Text, Center, Divider, Stack, FormControl, Input, Button, Checkbox, Icon, useBreakpointValue } from "native-base";
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../../components/AuthProvider';
+import { Routes } from '../Routes';
 
 interface ISignUpData
 {
@@ -17,6 +18,7 @@ export const SignInScreen = () => {
     const [status, setStatus] = React.useState(false)
     const [errors, setErrors] = React.useState<string>(undefined)
     const authContext = useAuth()
+
     const onSignIn = async () => {
         setStatus(true)
         let result = await authContext.signIn(formData.email, formData.password)
@@ -34,7 +36,7 @@ export const SignInScreen = () => {
             <Box flex={1}/>
             <Icon as={MaterialCommunityIcons} name="water" color="white" size={40}/>
             <Box flex={1}/>
-        </Box>
+        </Box> : <Box/>
         <Box flex={3} shadow={2} mx={3} roundedTop={14} bg='white' padding={4}
             w={{
                 base: "100%",
@@ -58,11 +60,11 @@ export const SignInScreen = () => {
                 </Stack>
             </FormControl>
             <Divider mb={4} mt={2}/>
-            {/* <Text alignSelf="flex-end" mb={6} fontSize='sm' color='muted.400'>Forgot password?</Text> */}
+            <Text alignSelf="flex-end" mb={6} fontSize='sm' color='muted.400'>Forgot password?</Text>
             <Button isLoading={status} isLoadingText="Signing in" variant='solid' colorScheme="red" onPress={onSignIn}>Sign in</Button>
             <Box flex={1}/>
             <Center>
-                <Text color="muted.400" my={4} onPress={() => nav.navigate('SignUp')}>Don't have an account? <Text bold>Sing up!</Text></Text>
+                <Text color="muted.400" my={4} onPress={() => nav.navigate(Routes.SignUp)}>Don't have an account? <Text bold>Sing up!</Text></Text>
             </Center>
         </Box>
     </Center>

@@ -5,19 +5,36 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useAuth } from '../../components/AuthProvider';
+import AuthService from '../../services/AuthService';
+
+interface SignInData
+{
+    email: string,
+    password: string,
+    confirmPassword: string,
+
+}
 
 export const SignUpScreen = () => {
     const nav = useNavigation<StackNavigationProp<any, any>>();
     const [status, setStatus] = useState(false)
-    const authContext = useAuth()
+
+    const onSignIn = async () => {
+        setStatus(true)
+        var authClient = new AuthService()
+        let result = await authClient.registerDonor(
+            
+        )
+        if(result.success == false)
+            setErrors(result.message)
+        else
+            setErrors(undefined)
+
+        setStatus(false)
+    }
 
     return (
     <Center flex={1} bg="red.500">
-        <Box flex={1}>
-            <Box flex={1}/>
-            <Icon as={MaterialCommunityIcons} name="heart-plus" color="white" size={40}/>
-            <Box flex={1}/>
-        </Box>
         <Box flex={3} shadow={2} roundedTop={14} bg='white' mx={3}
             w={{
                 base: "100%",

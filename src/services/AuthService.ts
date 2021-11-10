@@ -1,4 +1,4 @@
-import { AuthClient, AuthenticateRequest, RefreshTokenRequest } from "../utils/api/ApiClient";
+import { AccountsClient, AuthClient, AuthenticateRequest, RefreshTokenRequest } from "../utils/api/ApiClient";
 import { config } from "../config"
 
 export default class AuthService {
