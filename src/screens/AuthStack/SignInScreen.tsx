@@ -18,6 +18,11 @@ export const SignInScreen = () => {
     const [errors, setErrors] = React.useState<string>(undefined)
     const authContext = useAuth()
     const onSignIn = async () => {
+        if (formData?.email == undefined || formData?.password == undefined) {
+            setErrors("Email/password are required")
+            return
+        }
+
         setStatus(true)
         let result = await authContext.signIn(formData.email, formData.password)
         if(result.success == false)
