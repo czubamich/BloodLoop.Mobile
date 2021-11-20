@@ -14,10 +14,15 @@ interface ISignUpData
 
 export const SignInScreen = () => {
     const nav = useNavigation<StackNavigationProp<any, any>>();
-    const [formData, setFormData] = React.useState<ISignUpData | undefined>(undefined)
+    const authContext = useAuth()
+    const [formData, setFormData] = React.useState<ISignUpData>({email: "TestDonor", password:""})
     const [status, setStatus] = React.useState(false)
     const [errors, setErrors] = React.useState<string>(undefined)
-    const authContext = useAuth()
+
+    const updateForm = (signInData: ISignUpData) => {
+        setFormData(signInData)
+        setErrors(undefined)
+    }
 
     const onSignIn = async () => {
         setStatus(true)
@@ -32,25 +37,24 @@ export const SignInScreen = () => {
 
     return (
     <Center flex={1} bg="red.500">
-        <Box flex={2}>
-            <Box flex={1}/>
+        <Center flex={2}>
             <Icon as={MaterialCommunityIcons} name="water" color="white" size={40}/>
-            <Box flex={1}/>
-        </Box> : <Box/>
-        <Box flex={3} shadow={2} mx={3} roundedTop={14} bg='white' padding={4}
+        </Center>
+        <Box flex={3} shadow={2} roundedTop={14} bg='white' px={4}
             w={{
                 base: "100%",
                 md: "420",
             }}>
-            <FormControl marginTop={2} isInvalid={errors != undefined}>
+            <FormControl isInvalid={errors != undefined}>
                 <Stack>
-                    <Input 
-                        onChangeText={(value) => setFormData({...formData, email: value})}
+                    <Input mt={5}
+                        value={formData.email}
+                        onChangeText={(value) => updateForm({...formData, email: value})}
                         variant='filled'
                         placeholder="Email"
                         InputLeftElement={<Icon as={MaterialCommunityIcons} ml="2" name="account" color="muted.400"/>}/>
-                    <Input mt={6} mb={4}
-                        onChangeText={(value) => setFormData({...formData, password: value})} 
+                    <Input mt={4} mb={4}
+                        onChangeText={(value) => updateForm({...formData, password: value})} 
                         variant='filled'
                         placeholder="Password" type="password" 
                         InputLeftElement={<Icon as={MaterialCommunityIcons} ml="2" name="lock" color="muted.400"/>}/>
@@ -64,7 +68,7 @@ export const SignInScreen = () => {
             <Button isLoading={status} isLoadingText="Signing in" variant='solid' colorScheme="red" onPress={onSignIn}>Sign in</Button>
             <Box flex={1}/>
             <Center>
-                <Text color="muted.400" my={4} onPress={() => nav.navigate(Routes.SignUp)}>Don't have an account? <Text bold>Sing up!</Text></Text>
+                <Text position="absolute" bottom={0} color="muted.400" my={6} onPress={() => nav.navigate(Routes.SignUp)}>Don't have an account? <Text bold>Sing up!</Text></Text>
             </Center>
         </Box>
     </Center>

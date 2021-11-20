@@ -9,16 +9,15 @@ import { RefreshControl } from 'react-native';
 
 export const DonationsScreen = () => {
   const [data, setData] = React.useState<DonationSection[]>(undefined)
-  const [refreshing, setRefreshing] = React.useState(true)
   const authContext = useAuth()
 
   const refreshDonations = () => React.useEffect(() => {
     async function fetchDonations() {
-      setRefreshing(true)
+      await authContext.refresh()
+
       let donorService = new DonorService(authContext.authData)
       let response = await donorService.getDonations()
       setData(response)
-      setRefreshing(false)
     }
 
     fetchDonations()
@@ -35,7 +34,6 @@ export const DonationsScreen = () => {
       renderItem={({ item }) => (<DonationCard {...item}/>)}
       renderSectionHeader={({ section: { title } }) => <Center my={2}><Text fontSize="xl">{title}</Text></Center>}
       renderSectionFooter={() => <Divider/>}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshDonations}/>}
     />
   );
 }

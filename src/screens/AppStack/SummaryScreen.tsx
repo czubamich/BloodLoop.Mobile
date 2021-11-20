@@ -12,20 +12,22 @@ export const SummaryScreen = () => {
     const authContext = useAuth()
   
     React.useEffect(() => {
-      async function fetchDonations() {
+      async function fetchSummary() {
+        await authContext.refresh()
+
         let donorService = new DonorService(authContext.authData)
         let response = await donorService.getDonationsSummary("whole")
         setData(response)
       }
       
-      fetchDonations()
+      fetchSummary()
     }, [])
   
     if(data == undefined)
       return <LoadingView/>
   
     return (
-        <VStack mt={"4"}>
+        <VStack pt={4}>
             <SummaryCard {...data}/>
         </VStack>
     );

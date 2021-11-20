@@ -1,7 +1,7 @@
 import React, {createContext, useState, useContext} from 'react';
 import AuthService from '../services/AuthService';
 import AuthData from "../models/AuthData"
-import { AuthenticationResult } from '../utils/api/ApiClient';
+import { AuthenticationResult, JwtToken } from '../utils/api/ApiClient';
 
 export const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
@@ -41,15 +41,24 @@ export const AuthProvider: React.FC = ({children}) => {
         setAuthData({
           email: email, 
           token: _authResponse.accessToken.token, 
-          refreshToken: _authResponse.refreshToken.token
+          tokenExpiresAt: _authResponse.accessToken.expireAt,
+          refreshToken: _authResponse.refreshToken.token,
+          refreshExpiresAt: _authResponse.refreshToken.expireAt,
         })
       else
           await signOut()
-      console.log(authData);
+
       return _authResponse
   };
 
+  const verify = () => {
+    return new Date(Date.now() + 60000*10) <= authData.tokenExpiresAt
+  }
+
   const refresh = async () => {
+    if(verify())
+      return;
+
     let _refreshResponse = await authService.refresh(
       authData.refreshToken
     )
@@ -58,7 +67,9 @@ export const AuthProvider: React.FC = ({children}) => {
         setAuthData({
           email: authData.email, 
           token: _refreshResponse.accessToken.token, 
-          refreshToken: _refreshResponse.refreshToken.token
+          tokenExpiresAt: _refreshResponse.accessToken.expireAt,
+          refreshToken: _refreshResponse.refreshToken.token,
+          refreshExpiresAt: _refreshResponse.refreshToken.expireAt,
         })
     else
         await signOut()
