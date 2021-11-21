@@ -1,4 +1,4 @@
-import { AuthClient, AuthenticateRequest, RefreshTokenRequest } from "../utils/api/ApiClient";
+import { AuthClient, AuthenticateRequest, AuthenticationResult, RefreshTokenRequest } from "../utils/api/ApiClient";
 import { config } from "../config"
 
 export default class AuthService {
@@ -16,7 +16,13 @@ export default class AuthService {
                     usernameOrEmail: userName, 
                     password: password
                 })
-        )
+        ).catch((reason) => {
+            return new AuthenticationResult(
+            {
+                success: false,
+                message: "An error has occured.",
+            })
+        })
     }
 
     public refresh(refreshToken: string) {

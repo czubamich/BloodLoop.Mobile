@@ -1,12 +1,25 @@
 export interface DonationData
 {
-    name: String;
+    name: string;
     date: Date;
-    amount: String;
+    amount: string;
 }
 
 export interface DonationSection
 {
   title: string
   data: DonationData[]
+}
+
+export interface DonationSummary
+{
+    name: string;
+    amount: number;
+    count: number;
+}
+
+export interface DonorInfo
+{
+    firstName: string;
+    gender: boolean;
 }

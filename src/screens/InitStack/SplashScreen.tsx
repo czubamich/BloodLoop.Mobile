@@ -1,11 +1,14 @@
 import React from 'react';
-import { View, Text, Center, ScrollView, SectionList, Divider, Spinner } from "native-base";
+import { Center, Box, Icon } from "native-base";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export class SplashScreen extends React.Component {
     render() {
         return (
         <Center flex={1}>
-            <Spinner size={100} color="red.400"/>
+            <Box flex={1}/>
+            <Icon as={MaterialCommunityIcons} name="water" color="white" size={40}/>
+            <Box flex={1}/>
         </Center>
         )}
 }

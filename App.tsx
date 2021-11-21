@@ -11,7 +11,6 @@ import { CalendarScreen } from "./src/screens/AppStack/CalendarScreen";
 import { SummaryScreen } from "./src/screens/AppStack/SummaryScreen";
 import { SignInScreen } from "./src/screens/AuthStack/SignInScreen";
 import { SignUpScreen } from "./src/screens/AuthStack/SignUpScreen";
-import { SplashScreen } from "./src/screens/InitStack/SplashScreen";
 
 import "./src/locale"
 import { theme } from "./src/theme"
