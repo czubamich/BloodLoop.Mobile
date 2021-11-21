@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Center, ScrollView, SectionList, Divider, Spinner } from "native-base";
+import { Center, Spinner } from "native-base";
 
 export const LoadingView = () => {
     return (

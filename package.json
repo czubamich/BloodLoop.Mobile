@@ -8,6 +8,7 @@
     "@react-navigation/stack": "^6.0.11",
     "axios": "^0.23.0",
     "expo": "~42.0.0",
+    "expo-cli": "^4.13.0",
     "expo-localization": "~10.2.0",
     "expo-secure-store": "~10.2.0",
     "jsc-android": "^250230.2.1",
@@ -29,6 +30,7 @@
     "react-native-unimodules": "^0.14.6",
     "react-native-web": "^0.17.1",
     "react-redux": "^7.2.5",
+    "redux": "^4.1.2",
     "styled-components": "^5.3.0",
     "styled-system": "^5.1.5"
   },

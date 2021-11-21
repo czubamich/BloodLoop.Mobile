@@ -34,7 +34,7 @@ export class ApiBase {
       constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
           super();
           this.http = http ? http : <any>window;
-          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://bloodloop-api-dev.azurewebsites.net";
+          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
       }
   
       registerDonor(command: RegisterDonorCommand): Promise<DonorDto> {
@@ -86,7 +86,7 @@ export class ApiBase {
       constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
           super();
           this.http = http ? http : <any>window;
-          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://bloodloop-api-dev.azurewebsites.net";
+          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
       }
   
       signIn(request: AuthenticateRequest): Promise<AuthenticationResult> {
@@ -208,6 +208,61 @@ export class ApiBase {
       }
   }
   
+  export class DictionariesClient extends ApiBase {
+      private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+      private baseUrl: string;
+      protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+  
+      constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+          super();
+          this.http = http ? http : <any>window;
+          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+      }
+  
+      getBloodTypes(): Promise<BloodTypeDto[]> {
+          let url_ = this.baseUrl + "/api/Dictionaries/BloodTypes";
+          url_ = url_.replace(/[?&]$/, "");
+  
+          let options_ = <RequestInit>{
+              method: "GET",
+              headers: {
+                  "Accept": "application/json"
+              }
+          };
+  
+          return this.transformOptions(options_).then(transformedOptions_ => {
+              return this.http.fetch(url_, transformedOptions_);
+          }).then((_response: Response) => {
+              return this.processGetBloodTypes(_response);
+          });
+      }
+  
+      protected processGetBloodTypes(response: Response): Promise<BloodTypeDto[]> {
+          const status = response.status;
+          let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+          if (status === 200) {
+              return response.text().then((_responseText) => {
+              let result200: any = null;
+              let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+              if (Array.isArray(resultData200)) {
+                  result200 = [] as any;
+                  for (let item of resultData200)
+                      result200!.push(BloodTypeDto.fromJS(item));
+              }
+              else {
+                  result200 = <any>null;
+              }
+              return result200;
+              });
+          } else if (status !== 200 && status !== 204) {
+              return response.text().then((_responseText) => {
+              return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+              });
+          }
+          return Promise.resolve<BloodTypeDto[]>(<any>null);
+      }
+  }
+  
   export class DonorsClient extends ApiBase {
       private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
       private baseUrl: string;
@@ -216,7 +271,7 @@ export class ApiBase {
       constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
           super();
           this.http = http ? http : <any>window;
-          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://bloodloop-api-dev.azurewebsites.net";
+          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
       }
   
       getCurrentDonorInfo(): Promise<DonorDto> {
@@ -386,10 +441,11 @@ export class ApiBase {
   
   export class DonorDto implements IDonorDto {
       id?: string;
-      gender?: GenderType;
-      birthDay?: Date;
       firstName?: string | undefined;
       lastName?: string | undefined;
+      birthDay?: Date;
+      gender?: GenderType;
+      bloodType?: BloodTypeDto | undefined;
   
       constructor(data?: IDonorDto) {
           if (data) {
@@ -397,16 +453,18 @@ export class ApiBase {
                   if (data.hasOwnProperty(property))
                       (<any>this)[property] = (<any>data)[property];
               }
+              this.bloodType = data.bloodType && !(<any>data.bloodType).toJSON ? new BloodTypeDto(data.bloodType) : <BloodTypeDto>this.bloodType; 
           }
       }
   
       init(_data?: any) {
           if (_data) {
               this.id = _data["id"];
-              this.gender = _data["gender"];
-              this.birthDay = _data["birthDay"] ? new Date(_data["birthDay"].toString()) : <any>undefined;
               this.firstName = _data["firstName"];
               this.lastName = _data["lastName"];
+              this.birthDay = _data["birthDay"] ? new Date(_data["birthDay"].toString()) : <any>undefined;
+              this.gender = _data["gender"];
+              this.bloodType = _data["bloodType"] ? BloodTypeDto.fromJS(_data["bloodType"]) : <any>undefined;
           }
       }
   
@@ -420,20 +478,22 @@ export class ApiBase {
       toJSON(data?: any) {
           data = typeof data === 'object' ? data : {};
           data["id"] = this.id;
-          data["gender"] = this.gender;
-          data["birthDay"] = this.birthDay ? this.birthDay.toISOString() : <any>undefined;
           data["firstName"] = this.firstName;
           data["lastName"] = this.lastName;
+          data["birthDay"] = this.birthDay ? this.birthDay.toISOString() : <any>undefined;
+          data["gender"] = this.gender;
+          data["bloodType"] = this.bloodType ? this.bloodType.toJSON() : <any>undefined;
           return data; 
       }
   }
   
   export interface IDonorDto {
       id?: string;
-      gender?: GenderType;
-      birthDay?: Date;
       firstName?: string | undefined;
       lastName?: string | undefined;
+      birthDay?: Date;
+      gender?: GenderType;
+      bloodType?: IBloodTypeDto | undefined;
   }
   
   export enum GenderType {
@@ -441,14 +501,55 @@ export class ApiBase {
       Female = 2,
   }
   
+  export class BloodTypeDto implements IBloodTypeDto {
+      label?: string | undefined;
+      symbol?: string | undefined;
+  
+      constructor(data?: IBloodTypeDto) {
+          if (data) {
+              for (var property in data) {
+                  if (data.hasOwnProperty(property))
+                      (<any>this)[property] = (<any>data)[property];
+              }
+          }
+      }
+  
+      init(_data?: any) {
+          if (_data) {
+              this.label = _data["label"];
+              this.symbol = _data["symbol"];
+          }
+      }
+  
+      static fromJS(data: any): BloodTypeDto {
+          data = typeof data === 'object' ? data : {};
+          let result = new BloodTypeDto();
+          result.init(data);
+          return result;
+      }
+  
+      toJSON(data?: any) {
+          data = typeof data === 'object' ? data : {};
+          data["label"] = this.label;
+          data["symbol"] = this.symbol;
+          return data; 
+      }
+  }
+  
+  export interface IBloodTypeDto {
+      label?: string | undefined;
+      symbol?: string | undefined;
+  }
+  
   export class RegisterDonorCommand implements IRegisterDonorCommand {
       userName?: string | undefined;
       email?: string | undefined;
-      pesel?: string | undefined;
       password?: string | undefined;
+      confirmPassword?: string | undefined;
       firstName?: string | undefined;
       lastName?: string | undefined;
       gender?: GenderType;
+      bloodTypeLabel?: string | undefined;
       birthDay?: Date;
   
       constructor(data?: IRegisterDonorCommand) {
@@ -464,11 +565,12 @@ export class ApiBase {
           if (_data) {
               this.userName = _data["userName"];
               this.email = _data["email"];
-              this.pesel = _data["pesel"];
               this.password = _data["password"];
+              this.confirmPassword = _data["confirmPassword"];
               this.firstName = _data["firstName"];
               this.lastName = _data["lastName"];
               this.gender = _data["gender"];
+              this.bloodTypeLabel = _data["bloodTypeLabel"];
               this.birthDay = _data["birthDay"] ? new Date(_data["birthDay"].toString()) : <any>undefined;
           }
       }
@@ -484,11 +586,12 @@ export class ApiBase {
           data = typeof data === 'object' ? data : {};
           data["userName"] = this.userName;
           data["email"] = this.email;
-          data["pesel"] = this.pesel;
           data["password"] = this.password;
+          data["confirmPassword"] = this.confirmPassword;
           data["firstName"] = this.firstName;
           data["lastName"] = this.lastName;
           data["gender"] = this.gender;
+          data["bloodTypeLabel"] = this.bloodTypeLabel;
           data["birthDay"] = this.birthDay ? this.birthDay.toISOString() : <any>undefined;
           return data; 
       }
@@ -497,11 +600,12 @@ export class ApiBase {
   export interface IRegisterDonorCommand {
       userName?: string | undefined;
       email?: string | undefined;
-      pesel?: string | undefined;
       password?: string | undefined;
+      confirmPassword?: string | undefined;
       firstName?: string | undefined;
       lastName?: string | undefined;
       gender?: GenderType;
+      bloodTypeLabel?: string | undefined;
       birthDay?: Date;
   }
   
@@ -517,6 +621,8 @@ export class ApiBase {
                   if (data.hasOwnProperty(property))
                       (<any>this)[property] = (<any>data)[property];
               }
+              this.accessToken = data.accessToken && !(<any>data.accessToken).toJSON ? new JwtToken(data.accessToken) : <JwtToken>this.accessToken; 
+              this.refreshToken = data.refreshToken && !(<any>data.refreshToken).toJSON ? new JwtToken(data.refreshToken) : <JwtToken>this.refreshToken; 
           }
       }
   
@@ -549,8 +655,8 @@ export class ApiBase {
   export interface IAuthenticationResult {
       success?: boolean;
       message?: string | undefined;
-      accessToken?: JwtToken | undefined;
-      refreshToken?: JwtToken | undefined;
+      accessToken?: IJwtToken | undefined;
+      refreshToken?: IJwtToken | undefined;
   }
   
   export class JwtToken implements IJwtToken {
@@ -715,6 +821,13 @@ export class ApiBase {
                   if (data.hasOwnProperty(property))
                       (<any>this)[property] = (<any>data)[property];
               }
+              if (data.donations) {
+                  this.donations = [];
+                  for (let i = 0; i < data.donations.length; i++) {
+                      let item = data.donations[i];
+                      this.donations[i] = item && !(<any>item).toJSON ? new DonationDto(item) : <DonationDto>item;
+                  }
+              }
           }
       }
   
@@ -750,7 +863,7 @@ export class ApiBase {
   
   export interface IDonationGroupDto {
       key?: string | undefined;
-      donations?: DonationDto[] | undefined;
+      donations?: IDonationDto[] | undefined;
   }
   
   export class DonationDto implements IDonationDto {
