@@ -41,7 +41,7 @@ export const SignInScreen = () => {
     }
 
     return (
-    <Center flex={1} bg="red.500">
+    <Center flex={1} bg="primary.400">
         <Center flex={2}>
             <Icon as={MaterialCommunityIcons} name="water" color="white" size={40}/>
         </Center>
@@ -71,9 +71,8 @@ export const SignInScreen = () => {
             <Divider mb={4} mt={2}/>
             <Text alignSelf="flex-end" mb={6} fontSize='sm' color='muted.400'>Forgot password?</Text>
             <Button isLoading={status} isLoadingText="Signing in" variant='solid' colorScheme="red" onPress={onSignIn}>Sign in</Button>
-            <Box flex={1}/>
-            <Center>
-                <Text position="absolute" bottom={0} color="muted.400" my={6} onPress={() => nav.navigate(Routes.SignUp)}>Don't have an account? <Text bold>Sing up!</Text></Text>
+            <Center mt="auto">
+                <Text color="muted.400" my={6} onPress={() => nav.navigate(Routes.SignUp)}>Don't have an account? <Text bold>Sing up!</Text></Text>
             </Center>
         </Box>
     </Center>
