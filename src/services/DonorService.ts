@@ -1,7 +1,7 @@
 import { ApiException, DonorsClient, GenderType } from "../utils/api/ApiClient";
 import { config } from "../config"
 import AuthData from "../models/AuthData";
-import { DonationData, DonationSection, DonationSummary, DonorInfo } from "../models/DonationData";
+import { DonationData, DonationRestTime, DonationSection, DonationSummary, DonorInfo } from "../models/DonationData";
 import React from "react";
 import AuthService from "./AuthService";
 import { TimeSpan } from "../models/TimeSpan";
@@ -50,10 +50,10 @@ export default class DonorService {
 
     public getDonationRestTime(donationType: string) {
         return this.client.getUserDonationInterval(donationType)
-            .then((donationInterval) => <DonationRestTime>{
-                canDonate: true,
-                daysLeft: 10,
-                timeSpan: new TimeSpan(1000*60*60*24)
+            .then((donationInterval: any) => {
+                return <DonationRestTime>{
+                    timeSpan: new TimeSpan(donationInterval.totalMilliSeconds)
+                }
             })
     }
 }

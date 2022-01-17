@@ -1,5 +1,5 @@
 import React from 'react';
-import { VStack, Text, Icon, Center, Select, Divider, Flex } from "native-base";
+import { VStack, Text, Icon, Center, Select, Divider, Flex, Spinner, HStack } from "native-base";
 import DonorService from '../../services/DonorService';
 import { LoadingView } from '../InitStack/LoadingView';
 import { DonationSummary, DonorInfo } from '../../models/DonationData';
@@ -66,7 +66,12 @@ export const SummaryScreen = () => {
               {donationTypes ? donationTypes.map((donationType) => <Select.Item label={donationType.name} value={donationType.label}/>) : <Select.Item isDisabled label="loading..." value=""/>}
             </Select>
           </Center>
-          <SummaryCard mt={4} data={data}><Text color="red.600" fontSize='2xl'>Total Donated</Text></SummaryCard>
+          <SummaryCard mt={4} data={data}>
+            <HStack>
+              <Text color="red.600" fontSize='2xl' mr={4}>Total Donated</Text>
+              {(isFetchingData) ? <Spinner/> : <></>}
+            </HStack>
+          </SummaryCard>
       </VStack>
   );
 }

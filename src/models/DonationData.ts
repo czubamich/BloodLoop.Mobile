@@ -31,6 +31,4 @@ export interface DonorInfo
 export interface DonationRestTime
 {
     timeSpan: TimeSpan;
-    daysLeft: number;
-    canDonate: boolean;
 }
