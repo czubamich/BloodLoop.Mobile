@@ -1,6 +1,9 @@
+import { TimeSpan } from "./TimeSpan";
+
 export interface DonationData
 {
     name: string;
+    location: string;
     date: Date;
     amount: string;
 }
@@ -22,4 +25,12 @@ export interface DonorInfo
 {
     firstName: string;
     gender: boolean;
+    bloodType: string;
+}
+
+export interface DonationRestTime
+{
+    timeSpan: TimeSpan;
+    daysLeft: number;
+    canDonate: boolean;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Box, Text, Center, Divider, Stack, FormControl, Input, Button, Checkbox, Icon, useBreakpointValue } from "native-base";
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -15,7 +15,8 @@ interface ISignUpData
 export const SignInScreen = () => {
     const nav = useNavigation<StackNavigationProp<any, any>>();
     const authContext = useAuth()
-    const [formData, setFormData] = React.useState<ISignUpData>({email: "TestDonor", password:""})
+    const email = useRef(authContext.authData)
+    const [formData, setFormData] = React.useState<ISignUpData>({email: authContext.authData?.email, password:""})
     const [status, setStatus] = React.useState(false)
     const [errors, setErrors] = React.useState<string>(undefined)
 
@@ -42,10 +43,10 @@ export const SignInScreen = () => {
 
     return (
     <Center flex={1} bg="primary.400">
-        <Center flex={2}>
+        <Center flex={1}>
             <Icon as={MaterialCommunityIcons} name="water" color="white" size={40}/>
         </Center>
-        <Box flex={3} shadow={2} roundedTop={14} bg='white' px={4}
+        <Box flex={2} shadow={2} roundedTop={14} bg='white' px={4}
             w={{
                 base: "100%",
                 md: "420",

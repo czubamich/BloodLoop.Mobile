@@ -1,7 +1,9 @@
-import React, {createContext, useState, useContext} from 'react';
+import React, {createContext, useState, useContext, useEffect} from 'react';
 import AuthService from '../services/AuthService';
 import AuthData from "../models/AuthData"
 import { AuthenticationResult, JwtToken } from '../utils/api/ApiClient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LoadingView } from '../screens/InitStack/LoadingView';
 
 export const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
@@ -15,7 +17,7 @@ type AuthContextData = {
 
 export function useAuth(): AuthContextData {
   const context = useContext(AuthContext);
-
+  
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
@@ -24,12 +26,9 @@ export function useAuth(): AuthContextData {
 }
 
 export const AuthProvider: React.FC = ({children}) => {
-  const [authData, setAuthData] = useState<AuthData>(undefined);
-  const authService = new AuthService()
+  const [authData, setAuthData] = useState<AuthData>({email: "", token: "", tokenExpiresAt: new Date(0), refreshToken: "", refreshExpiresAt: new Date(0)});
+  const authService = new AuthService();
   const [isLoading, setLoading] = useState(true);
-
-  //TODO: Restore auth from asyncStorage
-  //
 
   const signIn = async (email: string, password: string) => {
       let _authResponse = await authService.signIn(
@@ -37,7 +36,9 @@ export const AuthProvider: React.FC = ({children}) => {
         password,
       )
 
-      if (_authResponse.success)
+      if (_authResponse.success) {
+        await AsyncStorage.setItem("email", email)
+        await AsyncStorage.setItem("refreshToken", _authResponse.refreshToken.token)
         setAuthData({
           email: email, 
           token: _authResponse.accessToken.token, 
@@ -45,45 +46,66 @@ export const AuthProvider: React.FC = ({children}) => {
           refreshToken: _authResponse.refreshToken.token,
           refreshExpiresAt: _authResponse.refreshToken.expireAt,
         })
-      else
+      } else
           await signOut()
 
       return _authResponse
   };
 
-  const verify = () => {
-    return new Date(Date.now() + 60000*10) <= authData.tokenExpiresAt
+  const verify = (_refreshToken) => {
+    return _refreshToken != null
+      && _refreshToken != undefined
+      && _refreshToken != ""
   }
 
-  const refresh = async () => {
-    if(verify())
+  const refreshFunc = async (refreshToken) =>
+  {
+    if(!verify(refreshToken))
       return;
 
     let _refreshResponse = await authService.refresh(
-      authData.refreshToken
+      refreshToken
     )
 
-    if (_refreshResponse.success)
+    if (_refreshResponse.success) {
+        await AsyncStorage.setItem("refreshToken", _refreshResponse.refreshToken.token)
         setAuthData({
-          email: authData.email, 
-          token: _refreshResponse.accessToken.token, 
+          ...authData,
+          token: _refreshResponse.accessToken.token,
           tokenExpiresAt: _refreshResponse.accessToken.expireAt,
           refreshToken: _refreshResponse.refreshToken.token,
           refreshExpiresAt: _refreshResponse.refreshToken.expireAt,
         })
-    else
+    } else
         await signOut()
 
     return _refreshResponse.success
   }
 
+  const refresh = async () => {
+    if (new Date(Date.now() + 60000*10) <= authData.tokenExpiresAt)
+      return await refreshFunc(authData.refreshToken)
+  }
+
   const signOut = async () => {
-    setAuthData(undefined);
+    setAuthData({...authData, refreshToken: "", token: ""});
+    await AsyncStorage.setItem("refreshToken", "")
   };
+
+  useEffect(() => {
+    async function _loadData() {
+      var _email = await AsyncStorage.getItem("email");
+      var _refreshToken = await AsyncStorage.getItem("refreshToken");
+      
+      setAuthData({...authData, email: _email ?? "", refreshToken: _refreshToken ?? ""})
+      await refreshFunc(_refreshToken)
+      setLoading(false)
+    }
+
+    _loadData()
+  }, [])
   
   return (
-    //This component will be used to encapsulate the whole App,
-    //so all components will have access to the Context
     <AuthContext.Provider value={{authData, isLoading, signIn, refresh, signOut}}>
       {children}
     </AuthContext.Provider>

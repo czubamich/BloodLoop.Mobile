@@ -18,6 +18,7 @@ import { theme } from "./src/theme"
 
 import { AuthContext, AuthProvider, useAuth } from "./src/components/AuthProvider";
 import { Routes } from "./src/screens/Routes";
+import { LoadingView } from "./src/screens/InitStack/LoadingView";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -61,15 +62,15 @@ export const App = () => {
   return (
     <AuthProvider>
       <NativeBaseProvider theme={theme}>
-          <StatusBar backgroundColor={"#EF4444"} animated={true} />
-          <Box safeAreaTop bg={"red.500"} />
-          <Box flex={1}>
-            <NavigationContainer>
-              <AuthContext.Consumer> 
-                {(value) => value?.authData ? <AppStack/> : <AuthStack/>}
-              </AuthContext.Consumer>
-            </NavigationContainer>
-          </Box>
+        <StatusBar backgroundColor={"#EF4444"} animated={true} />
+        <Box safeAreaTop bg={"red.500"} />
+        <Box flex={1}>
+          <NavigationContainer>
+            <AuthContext.Consumer> 
+              {(value) => value?.isLoading ? <LoadingView/> : value?.authData?.token ? <AppStack/> : <AuthStack/>}
+            </AuthContext.Consumer>
+          </NavigationContainer>
+        </Box>
       </NativeBaseProvider>
     </AuthProvider>
   );
