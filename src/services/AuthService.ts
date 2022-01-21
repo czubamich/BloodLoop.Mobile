@@ -1,4 +1,5 @@
 import { AuthClient, AuthenticateRequest, AuthenticationResult, RefreshTokenRequest } from "../utils/api/ApiClient";
+import { AsyncStorage } from "@react-native-async-storage/async-storage";
 import { config } from "../config"
 
 export default class AuthService {
@@ -7,6 +8,7 @@ export default class AuthService {
     constructor()
     {
         this.client = new AuthClient(config.apiUrl)
+
     }
 
     public signIn(userName: string, password: string) {

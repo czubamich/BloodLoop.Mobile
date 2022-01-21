@@ -1,5 +1,5 @@
 import React from "react";
-import { HStack, IconButton, Icon, Text, Menu, Button } from "native-base";
+import { HStack, IconButton, Icon, Text, Menu, Button, Modal } from "native-base";
 import { MaterialIcons } from '@expo/vector-icons';
 import { AuthContext } from "../AuthProvider";
 import { Pressable } from "react-native";
@@ -11,21 +11,26 @@ interface AppBarData
 
 export const AppBar = (props: AppBarData) => {
   const { signOut } = React.useContext(AuthContext);
+  const [donationModalActive, setDonationModalActive] = React.useState(false)
+  const [aboutModalActive, setAboutModalActive] = React.useState(false)
   
   return (
+    <>
     <HStack bg='red.500' px={1} py={2} justifyContent='space-between' alignItems='center' shadow={4}>
       <HStack space={4} alignItems='center'>
         <Text marginLeft={2} 
           color="white" 
           fontSize={20} 
           fontWeight='bold'>
-          {props.title}
         </Text>
       </HStack>
       <HStack space={2}>
         <Menu w={48} trigger={(triggerProps) => 
           <IconButton {...triggerProps} icon={<Icon as={<MaterialIcons name='more-vert' />} size='sm' color="white" />} />
         }>
+          <Menu.Item >
+            <Text onPress={() => {signOut()}}>Add Donation</Text>
+          </Menu.Item>
           <Menu.Item isDisabled>About</Menu.Item>
           <Menu.Item>
             <Text onPress={() => {signOut()}}>Sign Out</Text>
@@ -33,5 +38,12 @@ export const AppBar = (props: AppBarData) => {
         </Menu>
       </HStack>
     </HStack>
+    <Modal>
+
+    </Modal>
+    <Modal>
+      
+    </Modal>
+    </>
   )
 }

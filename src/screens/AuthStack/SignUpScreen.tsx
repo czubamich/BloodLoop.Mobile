@@ -49,7 +49,7 @@ export const SignUpScreen = () => {
     }
 
     return (
-    <Center flex={1} bg="red.500">
+    <Center flex={1} bg="primary.400">
         <Center flex={2}>
             <Icon as={MaterialCommunityIcons} name="tooltip-plus" color="white" size={40}/>
         </Center>
@@ -113,8 +113,7 @@ export const SignUpScreen = () => {
                 <Divider mb={4} mt={2}/>
                 <Button isLoading={status} isLoadingText="Signing in" variant='solid' colorScheme="red" onPress={onSignUp}>Sign up</Button>
             </FormControl>
-            <Box flex={1}/>
-            <Center>
+            <Center mt="auto">
                 <Text color="muted.400" my={6} onPress={() => nav.navigate(Routes.SignIn)}>Already have an account? <Text bold>Sing in!</Text></Text>
             </Center>
             </ScrollView>

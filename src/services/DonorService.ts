@@ -1,9 +1,10 @@
 import { ApiException, DonorsClient, GenderType } from "../utils/api/ApiClient";
 import { config } from "../config"
 import AuthData from "../models/AuthData";
-import { DonationData, DonationSection, DonationSummary, DonorInfo } from "../models/DonationData";
+import { DonationData, DonationRestTime, DonationSection, DonationSummary, DonorInfo } from "../models/DonationData";
 import React from "react";
 import AuthService from "./AuthService";
+import { TimeSpan } from "../models/TimeSpan";
 
 export default class DonorService {
     client: DonorsClient;
@@ -23,6 +24,7 @@ export default class DonorService {
                 data: donationGroup.donations.map((donation) => ({
                     name: donation.donationTypeLabel,
                     date: donation.date,
+                    location: donation.location,
                     amount: donation.volume.toString()
                     } as DonationData))
             } as DonationSection)))
@@ -32,7 +34,8 @@ export default class DonorService {
         return this.client.getCurrentDonorInfo()
             .then((donorInfo) => <DonorInfo>{
                 firstName: donorInfo.firstName,
-                gender: donorInfo.gender == GenderType.Male ? true : false
+                gender: donorInfo.gender == GenderType.Male ? true : false,
+                bloodType: donorInfo.bloodType.symbol
             })
     }
 
@@ -42,6 +45,15 @@ export default class DonorService {
                 name: donationSummary.donationType,
                 count: donationSummary.count,
                 amount: donationSummary.amount,
+            })
+    }
+
+    public getDonationRestTime(donationType: string) {
+        return this.client.getUserDonationInterval(donationType)
+            .then((donationInterval: any) => {
+                return <DonationRestTime>{
+                    timeSpan: new TimeSpan(donationInterval.totalMilliSeconds)
+                }
             })
     }
 }
