@@ -13,6 +13,7 @@ type AuthContextData = {
   signIn(login: string, password: string): Promise<AuthenticationResult>;
   refresh(): Promise<boolean>;
   signOut(): void;
+  reload(): void;
 };
 
 export function useAuth(): AuthContextData {
@@ -82,6 +83,11 @@ export const AuthProvider: React.FC = ({children}) => {
     return _refreshResponse.success
   }
 
+  const reload = () => {
+    setLoading(true)
+    setLoading(false)
+  }
+
   const refresh = async () => {
     if (new Date(Date.now() + 60000*10) <= authData.tokenExpiresAt)
       return await refreshFunc(authData.refreshToken)
@@ -106,7 +112,7 @@ export const AuthProvider: React.FC = ({children}) => {
   }, [])
   
   return (
-    <AuthContext.Provider value={{authData, isLoading, signIn, refresh, signOut}}>
+    <AuthContext.Provider value={{authData, isLoading, signIn, refresh, signOut, reload}}>
       {children}
     </AuthContext.Provider>
   );

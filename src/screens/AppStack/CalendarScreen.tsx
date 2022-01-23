@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Center, ScrollView, SectionList, Divider, VStack, Select, HStack, Flex, Spacer } from "native-base";
+import { Text, Center, VStack, Select, HStack, Flex, Spacer } from "native-base";
 import {Calendar} from 'react-native-calendars';
 import { Card } from '../../components/common/Card';
 import DonorService from '../../services/DonorService';
@@ -10,7 +10,7 @@ import { LoadingView } from '../InitStack/LoadingView';
 import { config } from '../../config';
 
 export const CalendarScreen = () =>  {
-    const [timeSpan, setTimeSpan] = React.useState<TimeSpan>(TimeSpan.zero)
+    const [timeSpan, setTimeSpan] = React.useState<TimeSpan>(TimeSpan.fromDays(0))
     const [currentDate, setCurrentDate] = React.useState<Date>(undefined)
     const [donationTypes, setDonationTypes] = React.useState<DonationTypeDto[]>(undefined)
     const authContext = useAuth()
@@ -20,9 +20,8 @@ export const CalendarScreen = () =>  {
   
       let donorService = new DonorService(authContext.authData)
       let response = await donorService.getDonationRestTime(donationType)
-      console.log("loaded timespan: "+response.timeSpan.days);
-      setTimeSpan(response.timeSpan)
-      setCurrentDate(response.timeSpan.milliseconds>0 ? timeSpan.addTo(new Date(Date.now())) : new Date(Date.now()))
+      setTimeSpan(response.timeSpan);
+      setCurrentDate(response.timeSpan.totalMilliSeconds>0 ? response.timeSpan.addTo(new Date()) : new Date());
     }
   
     async function fetchDonationTypes() {
@@ -85,8 +84,8 @@ export const CalendarScreen = () =>  {
                         { timeSpan.totalHours<24 ? <Text fontSize="xl">You can donate now!</Text> :
                         <HStack>
                             <Text fontSize="xl">Next donation: </Text>
-                            <Text fontSize="xl">{timeSpan.days}</Text>
-                            <Text fontSize="xl">days!</Text>
+                            <Text fontSize="xl" color="red.500">{timeSpan.days}</Text>
+                            <Text fontSize="xl"> days!</Text>
                         </HStack>
                         }
                     </Center>

@@ -34,7 +34,7 @@ export class ApiBase {
       constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
           super();
           this.http = http ? http : <any>window;
-          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:44341";
+          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
       }
   
       registerDonor(command: RegisterDonorCommand): Promise<DonorDto> {
@@ -86,7 +86,7 @@ export class ApiBase {
       constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
           super();
           this.http = http ? http : <any>window;
-          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:44341";
+          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
       }
   
       registerStaff(registerStaffCommand: RegisterStaffCommand): Promise<Unit> {
@@ -221,7 +221,7 @@ export class ApiBase {
       constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
           super();
           this.http = http ? http : <any>window;
-          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:44341";
+          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
       }
   
       signIn(request: AuthenticateRequest): Promise<AuthenticationResult> {
@@ -351,7 +351,7 @@ export class ApiBase {
       constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
           super();
           this.http = http ? http : <any>window;
-          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:44341";
+          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
       }
   
       getBloodTypes(): Promise<BloodTypeDto[]> {
@@ -449,7 +449,7 @@ export class ApiBase {
       constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
           super();
           this.http = http ? http : <any>window;
-          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:44341";
+          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
       }
   
       getDonationInterval(fromType: string | null, toType: string | null): Promise<string> {
@@ -547,7 +547,7 @@ export class ApiBase {
       constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
           super();
           this.http = http ? http : <any>window;
-          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:44341";
+          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
       }
   
       getCurrentDonorInfo(): Promise<DonorDto> {
@@ -714,6 +714,42 @@ export class ApiBase {
           return Promise.resolve<DonationSummaryDto>(<any>null);
       }
   
+      getTotalDonationSummary(): Promise<DonationSummaryDto> {
+          let url_ = this.baseUrl + "/api/Donors/Summary/Total";
+          url_ = url_.replace(/[?&]$/, "");
+  
+          let options_ = <RequestInit>{
+              method: "GET",
+              headers: {
+                  "Accept": "application/json"
+              }
+          };
+  
+          return this.transformOptions(options_).then(transformedOptions_ => {
+              return this.http.fetch(url_, transformedOptions_);
+          }).then((_response: Response) => {
+              return this.processGetTotalDonationSummary(_response);
+          });
+      }
+  
+      protected processGetTotalDonationSummary(response: Response): Promise<DonationSummaryDto> {
+          const status = response.status;
+          let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+          if (status === 200) {
+              return response.text().then((_responseText) => {
+              let result200: any = null;
+              let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+              result200 = DonationSummaryDto.fromJS(resultData200);
+              return result200;
+              });
+          } else if (status !== 200 && status !== 204) {
+              return response.text().then((_responseText) => {
+              return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+              });
+          }
+          return Promise.resolve<DonationSummaryDto>(<any>null);
+      }
+  
       getUserDonationInterval(toType: string | null): Promise<string> {
           let url_ = this.baseUrl + "/api/Donors/Interval/{toType}";
           if (toType === undefined || toType === null)
@@ -763,7 +799,7 @@ export class ApiBase {
       constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
           super();
           this.http = http ? http : <any>window;
-          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:44341";
+          this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
       }
   
       addDonations(donations: DonationWithPeselDto[]): Promise<Unit> {
@@ -1093,7 +1129,6 @@ export class ApiBase {
       birthDay?: Date;
   }
   
-  /** Represents a void type, since Void is not a valid return type in C#. */
   export class Unit implements IUnit {
   
       constructor(data?: IUnit) {
@@ -1121,7 +1156,6 @@ export class ApiBase {
       }
   }
   
-  /** Represents a void type, since Void is not a valid return type in C#. */
   export interface IUnit {
   }
   
@@ -1130,7 +1164,7 @@ export class ApiBase {
       email?: string | undefined;
       password?: string | undefined;
       confirmPassword?: string | undefined;
-      bloodBankId?: BloodBankId | undefined;
+      bloodBankId?: string;
   
       constructor(data?: IRegisterStaffCommand) {
           if (data) {
@@ -1138,7 +1172,6 @@ export class ApiBase {
                   if (data.hasOwnProperty(property))
                       (<any>this)[property] = (<any>data)[property];
               }
-              this.bloodBankId = data.bloodBankId && !(<any>data.bloodBankId).toJSON ? new BloodBankId(data.bloodBankId) : <BloodBankId>this.bloodBankId;
           }
       }
   
@@ -1148,7 +1181,7 @@ export class ApiBase {
               this.email = _data["email"];
               this.password = _data["password"];
               this.confirmPassword = _data["confirmPassword"];
-              this.bloodBankId = _data["bloodBankId"] ? BloodBankId.fromJS(_data["bloodBankId"]) : <any>undefined;
+              this.bloodBankId = _data["bloodBankId"];
           }
       }
   
@@ -1165,7 +1198,7 @@ export class ApiBase {
           data["email"] = this.email;
           data["password"] = this.password;
           data["confirmPassword"] = this.confirmPassword;
-          data["bloodBankId"] = this.bloodBankId ? this.bloodBankId.toJSON() : <any>undefined;
+          data["bloodBankId"] = this.bloodBankId;
           return data;
       }
   }
@@ -1175,118 +1208,7 @@ export class ApiBase {
       email?: string | undefined;
       password?: string | undefined;
       confirmPassword?: string | undefined;
-      bloodBankId?: IBloodBankId | undefined;
-  }
-  
-  export abstract class ValueObject implements IValueObject {
-  
-      constructor(data?: IValueObject) {
-          if (data) {
-              for (var property in data) {
-                  if (data.hasOwnProperty(property))
-                      (<any>this)[property] = (<any>data)[property];
-              }
-          }
-      }
-  
-      init(_data?: any) {
-      }
-  
-      static fromJS(data: any): ValueObject {
-          data = typeof data === 'object' ? data : {};
-          throw new Error("The abstract class 'ValueObject' cannot be instantiated.");
-      }
-  
-      toJSON(data?: any) {
-          data = typeof data === 'object' ? data : {};
-          return data;
-      }
-  }
-  
-  export interface IValueObject {
-  }
-  
-  export abstract class Identity extends ValueObject implements IIdentity {
-      id?: string;
-  
-      constructor(data?: IIdentity) {
-          super(data);
-      }
-  
-      init(_data?: any) {
-          super.init(_data);
-          if (_data) {
-              this.id = _data["id"];
-          }
-      }
-  
-      static fromJS(data: any): Identity {
-          data = typeof data === 'object' ? data : {};
-          throw new Error("The abstract class 'Identity' cannot be instantiated.");
-      }
-  
-      toJSON(data?: any) {
-          data = typeof data === 'object' ? data : {};
-          data["id"] = this.id;
-          super.toJSON(data);
-          return data;
-      }
-  }
-  
-  export interface IIdentity extends IValueObject {
-      id?: string;
-  }
-  
-  export abstract class IdentityOfBloodBankId extends Identity implements IIdentityOfBloodBankId {
-  
-      constructor(data?: IIdentityOfBloodBankId) {
-          super(data);
-      }
-  
-      init(_data?: any) {
-          super.init(_data);
-      }
-  
-      static fromJS(data: any): IdentityOfBloodBankId {
-          data = typeof data === 'object' ? data : {};
-          throw new Error("The abstract class 'IdentityOfBloodBankId' cannot be instantiated.");
-      }
-  
-      toJSON(data?: any) {
-          data = typeof data === 'object' ? data : {};
-          super.toJSON(data);
-          return data;
-      }
-  }
-  
-  export interface IIdentityOfBloodBankId extends IIdentity {
-  }
-  
-  export class BloodBankId extends IdentityOfBloodBankId implements IBloodBankId {
-  
-      constructor(data?: IBloodBankId) {
-          super(data);
-      }
-  
-      init(_data?: any) {
-          super.init(_data);
-      }
-  
-      static fromJS(data: any): BloodBankId {
-          data = typeof data === 'object' ? data : {};
-          let result = new BloodBankId();
-          result.init(data);
-          return result;
-      }
-  
-      toJSON(data?: any) {
-          data = typeof data === 'object' ? data : {};
-          super.toJSON(data);
-          return data;
-      }
-  }
-  
-  export interface IBloodBankId extends IIdentityOfBloodBankId {
+      bloodBankId?: string;
   }
   
   export class BloodBankDto implements IBloodBankDto {
@@ -1846,7 +1768,6 @@ export class ApiBase {
       lastName?: string | undefined;
       birthDay?: Date;
       gender?: GenderType;
-      bloodType?: BloodTypeDto2 | undefined;
   
       constructor(data?: IDonorExtDto) {
           if (data) {
@@ -1854,7 +1775,6 @@ export class ApiBase {
                   if (data.hasOwnProperty(property))
                       (<any>this)[property] = (<any>data)[property];
               }
-              this.bloodType = data.bloodType && !(<any>data.bloodType).toJSON ? new BloodTypeDto2(data.bloodType) : <BloodTypeDto2>this.bloodType;
           }
       }
   
@@ -1866,7 +1786,6 @@ export class ApiBase {
               this.lastName = _data["lastName"];
               this.birthDay = _data["birthDay"] ? new Date(_data["birthDay"].toString()) : <any>undefined;
               this.gender = _data["gender"];
-              this.bloodType = _data["bloodType"] ? BloodTypeDto2.fromJS(_data["bloodType"]) : <any>undefined;
           }
       }
   
@@ -1885,7 +1804,6 @@ export class ApiBase {
           data["lastName"] = this.lastName;
           data["birthDay"] = this.birthDay ? this.birthDay.toISOString() : <any>undefined;
           data["gender"] = this.gender;
-          data["bloodType"] = this.bloodType ? this.bloodType.toJSON() : <any>undefined;
           return data;
       }
   }
@@ -1897,47 +1815,6 @@ export class ApiBase {
       lastName?: string | undefined;
       birthDay?: Date;
       gender?: GenderType;
-      bloodType?: IBloodTypeDto2 | undefined;
-  }
-  
-  export class BloodTypeDto2 implements IBloodTypeDto2 {
-      label?: string | undefined;
-      symbol?: string | undefined;
-  
-      constructor(data?: IBloodTypeDto2) {
-          if (data) {
-              for (var property in data) {
-                  if (data.hasOwnProperty(property))
-                      (<any>this)[property] = (<any>data)[property];
-              }
-          }
-      }
-  
-      init(_data?: any) {
-          if (_data) {
-              this.label = _data["label"];
-              this.symbol = _data["symbol"];
-          }
-      }
-  
-      static fromJS(data: any): BloodTypeDto2 {
-          data = typeof data === 'object' ? data : {};
-          let result = new BloodTypeDto2();
-          result.init(data);
-          return result;
-      }
-  
-      toJSON(data?: any) {
-          data = typeof data === 'object' ? data : {};
-          data["label"] = this.label;
-          data["symbol"] = this.symbol;
-          return data;
-      }
-  }
-  
-  export interface IBloodTypeDto2 {
-      label?: string | undefined;
-      symbol?: string | undefined;
   }
   
   export class GetDonorInfoQuery implements IGetDonorInfoQuery {

@@ -5,8 +5,7 @@ import DonorService from '../../services/DonorService';
 import { LoadingView } from '../InitStack/LoadingView';
 import { DonationSection } from '../../models/DonationData';
 import { useAuth } from '../../components/AuthProvider';
-import { AntDesign } from "@expo/vector-icons"
-import { useIsFocused, useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
 export const DonationsScreen = () => {
   const [data, setData] = React.useState<DonationSection[]>(undefined)
