@@ -76,7 +76,7 @@ To build this project, you require:
    ```
 4. Run Expo
    ```sh
-   expo run
+   expo start
    ```
 5. You can run the app in Expo GO, or in Web
 
