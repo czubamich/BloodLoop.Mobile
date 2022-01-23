@@ -27,7 +27,6 @@ export const SignUpScreen = () => {
           fetchBloodTypes()
     }, [])
 
-
     const updateForm = (signUpData: IRegisterDonorCommand) => {
         setErrors(undefined)
         setFormData(signUpData)

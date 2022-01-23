@@ -1,4 +1,5 @@
-import { ApiException, DonorsClient, GenderType } from "../utils/api/ApiClient";
+import { AddDonationModal } from './../components/donations/AddDonationModal';
+import { ApiException, DonationDto, DonorsClient, GenderType } from "../utils/api/ApiClient";
 import { config } from "../config"
 import AuthData from "../models/AuthData";
 import { DonationData, DonationRestTime, DonationSection, DonationSummary, DonorInfo } from "../models/DonationData";
@@ -48,12 +49,26 @@ export default class DonorService {
             })
     }
 
+    public getTotalSummary() {
+        return this.client.getTotalDonationSummary()
+            .then((donationSummary) => <DonationSummary>{
+                name: donationSummary.donationType,
+                count: donationSummary.count,
+                amount: donationSummary.amount,
+            })
+    }
+
     public getDonationRestTime(donationType: string) {
         return this.client.getUserDonationInterval(donationType)
             .then((donationInterval: any) => {
+                console.log(donationInterval)
                 return <DonationRestTime>{
-                    timeSpan: new TimeSpan(donationInterval.totalMilliSeconds)
+                    timeSpan: new TimeSpan(donationInterval.totalMilliseconds)
                 }
             })
+    }
+
+    public addDonation(donation: DonationDto) {
+        return this.client.addDonation([donation])
     }
 }

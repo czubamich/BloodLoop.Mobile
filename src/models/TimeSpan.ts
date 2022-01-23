@@ -44,7 +44,6 @@ export class TimeSpan {
 	}
 
 	addTo(date: Date): Date {
-		console.log('add ' + this.totalMilliSeconds, this);
 		date.setMilliseconds(date.getMilliseconds() + this.totalMilliSeconds);
 
 		return date;
@@ -162,7 +161,4 @@ export class TimeSpan {
 		this._totalMilliSeconds = this.days * MILLISECONDS_IN_A_DAY + this.hours * MILLISECONDS_IN_AN_HOUR + this.minutes * MILLISECONDS_IN_A_MINUTE
 			+ this.seconds * MILLISECONDS_IN_A_SECOND + this.milliseconds;
 	}
-
-
-
 }
