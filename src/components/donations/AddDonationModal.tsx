@@ -34,7 +34,6 @@ export const AddDonationModal = (props: IAddDonationModalProps) =>
 
         setFormData(undefined)
         props.onClose();
-        authContext.reload();
       }
     
       React.useEffect(() => {

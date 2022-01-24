@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { AccountsClient, DictionariesClient, GenderType, IBloodTypeDto, IRegisterDonorCommand, RegisterDonorCommand } from '../../utils/api/ApiClient';
 import { Routes } from '../Routes';
 import { useAuth } from '../../components/AuthProvider';
@@ -14,8 +15,9 @@ export const SignUpScreen = () => {
     const authContext = useAuth()
     const [status, setStatus] = useState(false)
     const [errors, setErrors] = React.useState<string>(undefined)
-    const [formData, setFormData] = React.useState<IRegisterDonorCommand>(undefined)
+    const [formData, setFormData] = React.useState<IRegisterDonorCommand>({birthDay: new Date(), bloodTypeLabel: "a_rh_plus", gender: GenderType.Male})
     const [bloodTypes, setBloodTypes] = React.useState<IBloodTypeDto[]>(undefined)
+    const [showDatePicker, setShowDatePicker] = React.useState(false)
 
     React.useEffect(() => {
         async function fetchBloodTypes() {
@@ -42,7 +44,8 @@ export const SignUpScreen = () => {
         }
         catch(e)
         {
-            setErrors(e.Errors)
+            var errors = JSON.parse(e.response)
+            setErrors(Object.values(errors.errors).map(prop => prop.toString()).join("\n"));
         }
         setStatus(false)
     }
@@ -83,7 +86,7 @@ export const SignUpScreen = () => {
                 </HStack>
                     <Input mt={4}
                         value={formData?.birthDay?.toISOString().substring(0, 10)}
-                        onChangeText={(value) => updateForm({...formData, birthDay: new Date(value)})}
+                        onFocus={()=>setShowDatePicker(true)}
                         variant='filled'
                         placeholder="Birthday"
                         InputLeftElement={<Icon as={MaterialCommunityIcons} ml="2" name="calendar-star" color="muted.400"/>}/>
@@ -110,6 +113,7 @@ export const SignUpScreen = () => {
                         InputLeftElement={<Icon as={MaterialCommunityIcons} ml="2" name="lock-question" color="muted.400"/>}/>
             </Stack>
                 <Divider mb={4} mt={2}/>
+                {errors!=undefined ? <Text mb={4} color="red.500">{errors}</Text> : <></>}
                 <Button isLoading={status} isLoadingText="Signing in" variant='solid' colorScheme="red" onPress={onSignUp}>Sign up</Button>
             </FormControl>
             <Center mt="auto">
@@ -117,6 +121,12 @@ export const SignUpScreen = () => {
             </Center>
             </ScrollView>
         </Box>
+        {showDatePicker &&
+        <DateTimePicker
+            value={formData?.birthDay ?? new Date()}
+            mode={"date"}
+            display="default"
+            onChange={(event, value) => {setShowDatePicker(false); setFormData({...formData, birthDay: value})}}/>}
     </Center>
     )
 }
